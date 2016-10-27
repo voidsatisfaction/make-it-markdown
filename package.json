@@ -1,0 +1,28 @@
+{
+  "name": "make-it-markdown",
+  "version": "1.0.0",
+  "description": "Input html address then Output markdown file",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voidsatisfaction/make-it-markdown.git"
+  },
+  "keywords": [
+    "markdown"
+  ],
+  "author": "voidSatisfaction",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/voidsatisfaction/make-it-markdown/issues"
+  },
+  "homepage": "https://github.com/voidsatisfaction/make-it-markdown#readme",
+  "dependencies": {
+    "htmlparser2": "^3.9.2"
+  },
+  "devDependencies": {
+    "eslint": "^3.8.1"
+  }
+}
