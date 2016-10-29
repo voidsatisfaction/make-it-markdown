@@ -1,4 +1,5 @@
 const http = require('http');
+const fs = require('fs');
 const htmlparser = require('htmlparser2');
 
 // get html from url
@@ -12,36 +13,67 @@ function getHtml(url, callback) {
     res.on('data', (chunk) => {
       body += chunk;
     });
-    res.on('end', (res) => {
+    res.on('end', () => {
       // console.log(body);
       // res = JSON.parse(body);
       // console.log(res);
-      callback(body);
+      callback(body, (data) => {
+        fs.writeFile('test.md', data, (err) => {
+          console.log(`Making md file error : ${err}`)
+        });
+      });
     });
   }).on('error', (err) => {
-    console.log(`Something is error : ${err.message}`);
+    console.log(`html get request error : ${err.message}`);
   });
 }
-
 // make url to object
-function parseHtml(rawHtml) {
-  var parser = new htmlparser.Parser({
-    onopentag: function(name, attribs){
-        if(name === "script" && attribs.type === "text/javascript"){
-            console.log("JS! Hooray!");
-        }
+function parseHtml(rawHtml, callback) {
+  const blockTag = [
+    'h1', 'h2', 'h3', 'h4', 'h5', 'p', 'li',
+  ];
+  const openTagTable = {
+    // tagName: output
+    a: '[]()',
+    h1: '# ',
+    h2: '## ',
+    h3: '### ',
+    h4: '#### ',
+    h5: '##### ',
+    p: '\n',
+    li: '- ',
+  };
+  const closeTagTable = {
+    a: ':a',
+  };
+  var data = '';
+  const parser = new htmlparser.Parser({
+    onopentag(tagName, attribs) {
+      data += openTagTable[tagName];
+      if (attribs.href) {
+        data += `${attribs.href}`;
+      }
+      if (tagName === 'body') {
+        data = '';
+      }
     },
-    ontext: function(text){
-        console.log("-->", text);
+    ontext(text) {
+      if (text === '' || text === ' ' || text === '\n')
+        return ;
+      data += `${text}`;
     },
-    onclosetag: function(tagname){
-        if(tagname === "script"){
-            console.log("That's it?!");
-        }
-    }
-  }, {decodeEntities: true});
+    onclosetag(tagName) {
+      if (blockTag.includes(tagName)) {
+        data += '\n\n';
+      } else {
+        data += closeTagTable[tagName];
+      }
+    },
+  }, { decodeEntities: true });
   parser.write(rawHtml);
   parser.end();
+  console.log(data);
+  callback(data);
 }
 
 getHtml(url, parseHtml);
