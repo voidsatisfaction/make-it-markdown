@@ -29,44 +29,57 @@ function getHtml(url, callback) {
 }
 // make url to object
 function parseHtml(rawHtml, callback) {
-  const blockTag = [
-    'h1', 'h2', 'h3', 'h4', 'h5', 'p', 'li',
-  ];
-  const openTagTable = {
-    // tagName: output
-    a: '[]()',
-    h1: '# ',
-    h2: '## ',
-    h3: '### ',
-    h4: '#### ',
-    h5: '##### ',
-    p: '\n',
-    li: '- ',
-  };
-  const closeTagTable = {
-    a: ':a',
-  };
+  function changeToMD(temp) {
+    const ignoreTag = {
+      div: 1, span: 1, br: 1,
+    };
+    const inDirectTag = {
+      ul: 1, ol: 1,
+    };
+    const directTag = {
+      h1: '#', h2: '##', h3: '###', h4: '####', h5: '#####',
+      hr: '---', li: '-', p: '\n'
+    };
+
+    const { tagName, attribs, text } = temp;
+    console.log(tagName)
+    // General case
+    if (ignoreTag[tagName]) {
+      return '';
+    } else if (inDirectTag[tagName]) {
+      temp.parent = tagName;
+      return '';
+    } else if (directTag[tagName] && text) {
+      return `${directTag[tagName]} ${text}${'\n'}`;
+    }
+    // Special case
+    switch (tagName) {
+      case 'a':
+        return `[${text}](${attribs.href})${'\n'}`;
+      default:
+        return '';
+    }
+  }
   var data = '';
+  var temp = {};
+  var isBody = false;
   const parser = new htmlparser.Parser({
     onopentag(tagName, attribs) {
-      data += openTagTable[tagName];
-      if (attribs.href) {
-        data += `${attribs.href}`;
-      }
-      if (tagName === 'body') {
-        data = '';
+      isBody = (tagName === 'body') ? true : isBody;
+      if (isBody) {
+        temp.tagName = tagName;
+        temp.attribs = attribs;
       }
     },
     ontext(text) {
-      if (text === '' || text === ' ' || text === '\n')
-        return ;
-      data += `${text}`;
+      if (isBody) {
+        temp.text = text;
+      }
     },
     onclosetag(tagName) {
-      if (blockTag.includes(tagName)) {
-        data += '\n\n';
-      } else {
-        data += closeTagTable[tagName];
+      if (isBody) {
+        data += changeToMD(temp);
+        temp = {};
       }
     },
   }, { decodeEntities: true });
