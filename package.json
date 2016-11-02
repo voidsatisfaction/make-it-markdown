@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/voidsatisfaction/make-it-markdown#readme",
   "dependencies": {
+    "argv": "0.0.2",
     "htmlparser2": "^3.9.2",
     "to-markdown": "^3.0.3"
   },
