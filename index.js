@@ -9,26 +9,28 @@ const urls = argv.run().targets;
 const url = 'http://www.shayashi.jp/courses/2016/sui5kouki/20161102.html';
 
 function iterateOver(urls, iterator, callback) {
-  var doneCount = 0;
+  var i = 0;
   function report() {
-    doneCount += 1;
+    console.log(i);
+    i += 1;
 
-    if (doneCount === urls.length) {
+    if (i === urls.length) {
       callback();
+    } else {
+      iterator(urls[i], report);
     }
   }
-
-  for(var i = 0; i < urls.length; i++) {
-    iterator(urls[i], report);
-  }
+  iterator(urls[i], report, i);
 }
 
-function getHtml(url, callback) {
-  function fileSave(md, callback) {
-    fs.writeFile(`${ new Date() }test.md`, md, (err) => {
-      console.log(`Making md file error : ${err}`);
+function getHtml(url, callback, report, i) {
+  function fileSave(md) {
+    fs.writeFile(`${ new Date() }test${i}.md`, md, (err) => {
+      if (err) {
+        console.log(`Making md file error : ${err}`);
+      }
+      report();
     });
-    callback();
   }
   var body = '';
   http.get(url, (res) => {
@@ -53,9 +55,8 @@ function htmlToMarkdown(data, callback) {
   callback(md);
 }
 
-iterateOver(urls, (url, report) => {
-  getHtml(url, htmlToMarkdown);
-
+iterateOver(urls, (url, report, i) => {
+  getHtml(url, htmlToMarkdown, report, i);
 }, () => console.log('all done'));
 
 // change it to mdfile
