@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/voidsatisfaction/make-it-markdown#readme",
   "dependencies": {
-    "htmlparser2": "^3.9.2"
+    "htmlparser2": "^3.9.2",
+    "to-markdown": "^3.0.3"
   },
   "devDependencies": {
     "eslint": "^3.8.1"
