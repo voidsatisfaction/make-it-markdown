@@ -25,7 +25,7 @@ function iterateOver(urls, iterator, callback) {
 
 function getHtml(url, callback, report, i) {
   function fileSave(md) {
-    fs.writeFile(`${ new Date() }test${i}.md`, md, (err) => {
+    fs.writeFile(`./examples/${new Date() }test${i}.md`, md, (err) => {
       if (err) {
         console.log(`Making md file error : ${err}`);
       }

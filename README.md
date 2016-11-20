@@ -1,5 +1,9 @@
-# make-it-markdown
+# Make It Markdown
 Input html address then Output automated markdown file
+
+# 기획
+- url입력 => md변환 내용 + md실제 render 내용 + 파일 다운받을것인지 아닌지(md변환 내용에서 수정가능케 한다.)
+- SPA(Single Page Application)
 
 # Todo list
 - General
